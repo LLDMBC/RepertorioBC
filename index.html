@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Repertorio Local</title>
+    
+    <link rel="stylesheet" href="/src/styles/main.css">
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/icono.png">
+    <link rel="apple-touch-icon" href="/icono.png">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+
+    <div id="vista-menu" class="layout-principal">
+        
+        <aside id="sidebar-temas">
+            <div class="logo-sidebar">
+                <h2>Repertorio</h2>
+                <div class="contadores-wrapper">
+                    <span id="contador-cantos" class="contador-estilo">...</span>
+                    <span id="contador-descargas" class="contador-estilo-descargas" style="display: none;">...</span>
+                </div>
+            </div>
+            <h3>Filtrar por Tema</h3>
+            <ul id="lista-temas"></ul>
+        </aside>
+
+        <main class="contenido-derecho">
+            <header class="cabecera-menu">
+                <button id="btn-toggle-sidebar" title="Mostrar/Ocultar Menú">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <div class="contenedor-buscador">
+                    <input type="text" id="buscador" placeholder="Buscar canto por título...">
+                    <button id="btn-limpiar-busqueda" class="oculto" title="Borrar búsqueda">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <div id="lista-cantos" class="lista-vertical"></div>
+        </main>
+    </div>
+
+    <div id="vista-visor" style="display: none;">
+        <div id="barra-superior">
+            <button id="btn-cerrar" title="Cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <h2 id="titulo-canto">Nombre del Canto</h2>
+            
+            <button id="btn-reset-zoom" title="Ajustar a la pantalla" style="display: none;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path>
+                    <path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="contenedor-pdf"></div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
