@@ -122,46 +122,219 @@ body { background-color: var(--bg-app); color: var(--text-primary); height: 100v
 }
 .ancho-total { width: 100%; }
 
-/* --- LISTA COMPACTA DE PARTITURAS (LA SOLUCIÓN AL AMONTONAMIENTO) --- */
+/* --- LISTA COMPACTA DE PARTITURAS (NUEVO DISEÑO HORIZONTAL) --- */
 .contenedor-lista-compacta { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; }
 .lista-compacta { display: flex; flex-direction: column; }
 
-.item-compacto {
-    display: flex; flex-direction: column; gap: 12px;
-    padding: 16px; border-bottom: 1px solid var(--border-color);
+/* --- CONTENEDOR DE FILA (Horizontal y Espacioso) --- */
+.item-fila {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 16px 24px !important;
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.2s ease !important;
 }
-.item-compacto:last-child { border-bottom: none; }
 
-.item-info { flex: 1; }
+.item-fila:last-child {
+    border-bottom: none !important;
+}
+
+.item-fila:hover {
+    background-color: #f1f5f9 !important; /* Un gris muy leve para el feedback */
+}
+
+/* --- BLOQUE DE TEXTO (Izquierda) --- */
+.info-texto {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    text-align: left !important;
+}
+
 .nombre-canto-link {
-    all: unset; display: block; font-size: 15px; font-weight: 700; color: var(--navy-deep);
-    margin-bottom: 8px; cursor: pointer; transition: color 0.2s;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--navy-deep) !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-bottom: 2px !important;
+    text-decoration: none !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    text-align: left !important;
+    outline: none !important;
+    width: 100% !important;
+    display: block !important;
 }
-.nombre-canto-link:hover { color: var(--gold-accent); }
 
-.item-etiquetas { display: flex; flex-wrap: wrap; gap: 6px; }
-.etiqueta {
-    background: #e2e8f0; /* Gris visible para contraste en fondo blanco */
-    color: var(--text-secondary);
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    display: inline-block;
+.subtitulo {
+    font-size: 13px !important;
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
 }
 
-.item-acciones { 
-    display: flex; 
-    flex-direction: row; /* Previene el apilamiento vertical */
-    gap: 8px; 
-    width: 100%;
-    margin-top: 12px;
+/* --- BLOQUE DE ACCIONES (Derecha) --- */
+.acciones-derecha {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
 }
-.item-acciones .btn-pequeno { 
-    flex: 1; /* Ocupan mitad y mitad exactos */
-    padding: 8px 0; /* Padding vertical reducido */
-    text-align: center;
+
+/* --- BOTONES LIMPIOS (Sin marcos, estilo plano) --- */
+.btn-icono {
+    background: none !important;
+    border: none !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    color: var(--text-secondary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-icono:hover {
+    background-color: rgba(15, 23, 42, 0.05) !important;
+    color: var(--navy-deep) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-peligro-hover:hover {
+    background-color: var(--danger-bg) !important;
+    color: var(--danger-text) !important;
+}
+
+/* --- BOTÓN PROMOVER (Estilo Badge) --- */
+.btn-promover {
+    all: unset !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    padding: 6px 12px !important;
+    background-color: var(--gold-accent) !important;
+    color: white !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    transition: opacity 0.2s !important;
+}
+
+.btn-promover:hover {
+    opacity: 0.9 !important;
+    box-shadow: 0 2px 4px rgba(212, 175, 55, 0.3) !important;
+}
+
+/* --- VARIABLES DE ESTADO --- */
+:root {
+    --color-exito: #10b981;    /* Verde vibrante */
+    --color-exito-bg: #ecfdf5; /* Fondo verde suave */
+    --color-error: #ef4444;    /* Rojo vibrante */
+    --color-error-bg: #fef2f2; /* Fondo rojo suave */
+}
+
+/* --- ESTILO DE LA TABLA --- */
+.tabla-dashboard {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 12px !important; /* Crea el espacio entre usuarios */
+    margin-top: -12px !important;
+}
+
+.tabla-dashboard thead th {
+    padding: 12px 20px !important;
+    color: var(--text-secondary) !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    font-weight: 700 !important;
+    border: none !important;
+}
+
+/* --- FILAS DE USUARIO --- */
+.tabla-dashboard tbody tr {
+    background-color: var(--bg-card) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.tabla-dashboard tbody tr:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+}
+
+.tabla-dashboard td {
+    padding: 16px 20px !important;
+    border-top: 1px solid var(--border-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Bordes redondeados para la fila (simulado en celdas extremas) */
+.tabla-dashboard td:first-child {
+    border-left: 1px solid var(--border-color) !important;
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+}
+
+.tabla-dashboard td:last-child {
+    border-right: 1px solid var(--border-color) !important;
+    border-top-right-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
+/* --- BADGE DE ESTADO (ACTIVO / PENDIENTE) --- */
+.status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 4px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+.status-badge.activo {
+    background-color: var(--color-exito-bg) !important;
+    color: var(--color-exito) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+.status-badge.pendiente {
+    background-color: #fffbeb !important;
+    color: #d97706 !important;
+    border: 1px solid rgba(217, 119, 6, 0.2) !important;
+}
+
+/* --- BOTÓN REVOCAR (Sutil pero claro) --- */
+.btn-revocar {
+    background: none !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+.btn-revocar:hover {
+    background-color: var(--danger-bg) !important;
+    color: var(--danger-text) !important;
+    border-color: var(--danger-border) !important;
 }
 
 /* --- MODAL --- */

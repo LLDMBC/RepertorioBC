@@ -53,7 +53,40 @@ async function validarRedireccion(userId) {
 }
 
 // INICIALIZACIÓN
+async function cargarCoros() {
+    const selectCoro = document.getElementById('signup-coro');
+    if (!selectCoro) return;
+    
+    const { data: coros, error } = await supabase
+        .from('coros')
+        .select('id, nombre')
+        .neq('id', 'estatal')
+        .order('nombre', { ascending: true });
+        
+    if (!error && coros) {
+        selectCoro.innerHTML = coros.map(c => `<option value="${c.id}">${c.nombre.toUpperCase()}</option>`).join('');
+    } else {
+        selectCoro.innerHTML = '<option value="">Error cargando sedes</option>';
+    }
+}
+
 async function revisarSesionAuth() {
+    await cargarCoros();
+    
+    // Escuchar eventos de recuperación de contraseña
+    supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event == 'PASSWORD_RECOVERY') {
+            const modalReset = document.getElementById('modal-reset-pass');
+            if (modalReset) {
+                modalReset.style.display = 'block';
+                formLogin.style.display = 'none';
+                tabLogin.style.display = 'none';
+                tabSignup.style.display = 'none';
+                setEstado('Establezca su nueva contraseña.', 'ok');
+            }
+        }
+    });
+
     try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
@@ -83,8 +116,52 @@ formLogin?.addEventListener('submit', async (e) => {
     await validarRedireccion(data.user.id);
 });
 
+document.getElementById('btn-olvide-pass')?.addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    if (!email) {
+        setEstado('Por favor, ingresa tu email en el campo de arriba para recuperar tu contraseña.', 'error');
+        return;
+    }
+    
+    setEstado('Enviando correo de recuperación...');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/auth.html',
+    });
+    
+    if (error) {
+        setEstado(`Error enviando correo: ${error.message}`, 'error');
+    } else {
+        setEstado('Correo enviado. Revisa tu bandeja de entrada.', 'ok');
+    }
+});
+
+const formResetPass = document.getElementById('form-reset-pass');
+formResetPass?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById('reset-new-password').value;
+    
+    setEstado('Guardando nueva contraseña...');
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    
+    if (error) {
+        setEstado(`Error guardando: ${error.message}`, 'error');
+    } else {
+        setEstado('Contraseña actualizada exitosamente. Redirigiendo...', 'ok');
+        setTimeout(() => window.location.replace('/auth.html'), 2000);
+    }
+});
+
 formSignup?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // HONEYPOT check
+    const botField = document.getElementById('signup-bot').value;
+    if (botField) {
+        console.warn("Bot detected via honeypot.");
+        setEstado('Solicitud enviada.', 'ok'); // Fallo silencioso
+        return;
+    }
+
     const nombre = document.getElementById('signup-nombre').value.trim();
     const email = document.getElementById('signup-email').value.trim().toLowerCase();
     const password = document.getElementById('signup-password').value;

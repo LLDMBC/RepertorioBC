@@ -97,7 +97,32 @@ export const visorUI = {
         });
 
         contenedorPdf.addEventListener('click', (e) => {
-            if (!this.pinchZoomando && e.target.id !== 'btn-reset-zoom') {
+            if (this.pinchZoomando || e.target.id === 'btn-reset-zoom') return;
+
+            if (localStorage.getItem('modo-paginas') === 'true') {
+                const rect = contenedorPdf.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const width = rect.width;
+                const tercio = width * 0.3;
+
+                if (clickX < tercio) {
+                    // Tap izquierdo: Página anterior
+                    e.stopPropagation();
+                    e.preventDefault();
+                    contenedorPdf.scrollBy({ left: -width, behavior: 'smooth' });
+                } else if (clickX > width - tercio) {
+                    // Tap derecho: Página siguiente
+                    e.stopPropagation();
+                    e.preventDefault();
+                    contenedorPdf.scrollBy({ left: width, behavior: 'smooth' });
+                } else {
+                    // Tap central: Ocultar/mostrar barra
+                    e.stopPropagation();
+                    e.preventDefault();
+                    barraSuperior.classList.toggle('barra-oculta');
+                }
+            } else {
+                // Modo Scroll normal
                 barraSuperior.classList.toggle('barra-oculta');
             }
         });

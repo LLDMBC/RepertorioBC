@@ -37,25 +37,20 @@
                     <button class="nav-btn" data-cat="estatal">
                         CORO ESTATAL
                     </button>
-                    <div id="nav-conciertos"></div> </div>
+                    <div id="nav-conciertos"></div> 
+                </div>
         
                 <div class="sidebar-seccion">
                     <p class="section-label">FILTRAR POR TEMA</p>
                     <div id="lista-temas" class="temas-list"></div>
                 </div>
-        
-                <div class="sidebar-seccion ajustes-bottom">
-                    <p class="section-label">CONFIGURACIÓN</p>
-                    <button id="btn-ajustes" class="nav-btn">
-                        AJUSTES DE LA APP
-                    </button>
-                    <button id="btn-limpiar-cache" class="nav-btn">
-                        LIMPIAR MEMORIA
-                    </button>
-                    <button id="btn-salir" class="nav-btn btn-peligro">
-                        CERRAR SESIÓN
-                    </button>
-                </div>
+            </div>
+
+            <div id="sidebar-footer" class="sidebar-footer">
+                <p class="section-label" style="padding-top: 15px;">CONFIGURACIÓN</p>
+                <button id="btn-ajustes" class="nav-btn">
+                    <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span> AJUSTES DE LA APP
+                </button>
             </div>
         </aside>
 
@@ -100,6 +95,34 @@
         </main>
     </div>
 
+    <!-- Banner Canto en Vivo -->
+    <div id="banner-vivo" class="banner-vivo" style="display: none;">
+        <div class="banner-contenido">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><path d="M12 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path><path d="M17.65 17.65a8 8 0 1 0-11.3 0"></path></svg>
+            <span id="banner-texto">CANTANDO AHORA: Nombre del Canto</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="btn-abrir-vivo" class="banner-btn">ABRIR</button>
+            <button id="btn-cerrar-banner" class="btn-cerrar-banner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Banner Recordatorio -->
+    <div id="banner-recordatorio" class="banner-recordatorio" style="display: none;">
+        <div class="banner-contenido">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span id="recordatorio-texto">MENSAJE IMPORTANTE</span>
+        </div>
+        <button id="btn-cerrar-recordatorio" class="btn-cerrar-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+    </div>
+
+    <!-- Sistema de Toasts -->
+    <div id="contenedor-toasts"></div>
+
     <div id="vista-visor" style="display: none;">
         <div id="barra-superior">
             <button id="btn-cerrar" title="Cerrar">
@@ -118,6 +141,61 @@
             </button>
         </div>
         <div id="contenedor-pdf"></div>
+    </div>
+
+    <!-- Modal Ajustes -->
+    <div id="modal-ajustes" class="modal-overlay" style="display: none; justify-content: center; align-items: center; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000;">
+        <div class="modal-content" style="background: var(--color-superficie); border: 1px solid var(--color-borde); color: var(--color-texto-principal); width: 90%; max-width: 400px; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-borde); padding-bottom: 16px; margin-bottom: 16px;">
+                <h3 style="font-size: 18px; margin: 0; font-weight: 600; color: var(--color-texto-principal);">Ajustes de la App</h3>
+                <button id="btn-cerrar-ajustes" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-texto-suave);">✕</button>
+            </div>
+            
+            <div class="ajustes-seccion" style="margin-bottom: 24px;">
+                <p style="font-size: 12px; font-weight: 600; color: var(--color-texto-suave); margin-bottom: 8px; text-transform: uppercase;">PERFIL DE USUARIO</p>
+                <div style="background: var(--color-superficie-secundaria); padding: 14px; border-radius: 8px; font-size: 14px; border: 1px solid var(--color-borde);">
+                    <p style="margin: 0;"><strong>Nombre:</strong> <span id="info-nombre" style="color: var(--color-texto-principal);">Cargando...</span></p>
+                    <p style="margin: 8px 0 0 0;"><strong>Email:</strong> <span id="info-email" style="color: var(--color-texto-principal);">Cargando...</span></p>
+                    <p style="margin: 8px 0 0 0;"><strong>Sede:</strong> <span id="info-sede" style="color: var(--color-texto-principal);">Cargando...</span></p>
+                    <p style="margin: 8px 0 0 0; display: flex; align-items: center; gap: 6px;">
+                        <strong>Rol:</strong> 
+                        <span id="info-rol" style="background: var(--color-acento); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;">Cargando...</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="ajustes-seccion" style="margin-bottom: 24px;">
+                <p style="font-size: 12px; font-weight: 600; color: var(--color-texto-suave); margin-bottom: 8px; text-transform: uppercase;">PREFERENCIAS</p>
+                <div style="background: var(--color-superficie-secundaria); padding: 14px; border-radius: 8px; font-size: 14px; border: 1px solid var(--color-borde); display: flex; justify-content: space-between; align-items: center;">
+                    <label for="chk-modo-paginas" style="font-weight: 500; color: var(--color-texto-principal); cursor: pointer;">Cambio de Página (Tap)</label>
+                    <label class="switch-estilo">
+                        <input type="checkbox" id="chk-modo-paginas">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="ajustes-seccion" style="margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px;">
+                <button id="btn-limpiar-cache" class="nav-btn" style="width: 100%; justify-content: center; text-align: center; border: 1px solid var(--color-borde); background: var(--color-superficie-secundaria); padding: 12px; border-radius: 8px;">
+                    LIMPIAR MEMORIA
+                </button>
+                <button id="btn-salir" class="nav-btn btn-peligro" style="width: 100%; justify-content: center; text-align: center; padding: 12px; border-radius: 8px;">
+                    CERRAR SESIÓN
+                </button>
+            </div>
+
+            <div class="ajustes-seccion" style="margin-bottom: 24px;">
+                <p style="font-size: 12px; font-weight: 600; color: var(--color-texto-suave); margin-bottom: 8px; text-transform: uppercase;">NOTIFICACIONES RECIENTES</p>
+                <div id="historial-notificaciones" style="background: var(--color-superficie-secundaria); padding: 12px; border-radius: 8px; border: 1px solid var(--color-borde); max-height: 150px; overflow-y: auto;">
+                    <p style="font-size: 12px; color: var(--color-texto-suave); text-align: center;">Sin notificaciones recientes</p>
+                </div>
+            </div>
+
+            <div class="ajustes-seccion" style="text-align: center; border-top: 1px solid var(--color-borde); padding-top: 16px;">
+                <p style="font-size: 13px; font-weight: 500; color: var(--color-texto-principal); margin: 0;">RepertorioBC v1.0.0</p>
+                <p style="font-size: 11.5px; color: var(--color-texto-suave); margin: 6px 0 0 0;">Desarrollado para el Coro por Huri</p>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>

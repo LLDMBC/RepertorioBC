@@ -96,6 +96,7 @@ if (!perfil) throw new Error("PERFIL_NO_ENCONTRADO");
         await cargarRepertorio();
         construirInterfaz();
         configurarEventosGlobales();
+        configurarSuscripcionesRealtime();
 
     } catch (err) {
         console.error("Fallo crítico en el arranque:", err);
@@ -122,6 +123,134 @@ async function cargarRepertorio() {
     }));
 }
 
+function configurarSuscripcionesRealtime() {
+    supabase.channel('cambios-repertorio')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'cantos' }, manejarCambioRealtime)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'cantos_coros' }, manejarCambioRealtime)
+        .subscribe();
+
+    // Suscripción a Avisos
+    const idSede = APP_STATE.perfil.coro_id;
+    supabase.channel('avisos-sede')
+        .on('postgres_changes', { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'avisos',
+            filter: `coro_id=eq.${idSede}`
+        }, payload => manejarNuevoAviso(payload.new))
+        .subscribe();
+}
+
+/**
+ * ============================================================================
+ * SISTEMA DE FEEDBACK (TOASTS)
+ * ============================================================================
+ */
+window.mostrarToast = (mensaje, tipo = 'exito') => {
+    const contenedor = document.getElementById('contenedor-toasts');
+    if (!contenedor) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    toast.textContent = mensaje;
+
+    contenedor.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'toastOut 0.4s ease forwards';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+};
+
+async function manejarNuevoAviso(aviso) {
+    if (aviso.tipo === 'VIVO') {
+        const banner = document.getElementById('banner-vivo');
+        const texto = document.getElementById('banner-texto');
+        const btnAbrir = document.getElementById('btn-abrir-vivo');
+
+        if (banner && texto && btnAbrir) {
+            texto.textContent = `CANTANDO AHORA: ${aviso.mensaje.toUpperCase()}`;
+            banner.style.display = 'flex';
+            banner.style.transform = 'translateX(-50%) translateY(0)';
+
+            btnAbrir.onclick = () => {
+                const canto = APP_STATE.cantos.find(c => c.id == aviso.metadata.id_canto);
+                if (canto) {
+                    pdfEngine.abrirVisor(canto, DOM.contenedorPdf, DOM.barraSuperior);
+                    banner.style.transform = 'translateX(-50%) translateY(-150%)';
+                    setTimeout(() => banner.style.display = 'none', 300);
+                }
+            };
+
+            // Desaparecer tras 10 minutos
+            setTimeout(() => {
+                if (banner.style.display === 'flex') {
+                    banner.style.transform = 'translateX(-50%) translateY(-150%)';
+                    setTimeout(() => banner.style.display = 'none', 300);
+                }
+            }, 600000);
+        }
+    } else if (aviso.tipo === 'RECORDATORIO') {
+        const bannerRec = document.getElementById('banner-recordatorio');
+        const textoRec = document.getElementById('recordatorio-texto');
+        if (bannerRec && textoRec) {
+            textoRec.textContent = aviso.mensaje.toUpperCase();
+            bannerRec.style.display = 'flex';
+            bannerRec.style.transform = 'translateX(-50%) translateY(0)';
+        }
+
+        const modalAjustes = document.getElementById('modal-ajustes');
+        if (modalAjustes && modalAjustes.style.display === 'flex') {
+            await cargarNotificacionesRecientes();
+        }
+    }
+}
+
+async function cargarNotificacionesRecientes() {
+    const lista = document.getElementById('historial-notificaciones');
+    if (!lista) return;
+
+    try {
+        const { data, error } = await supabase
+            .from('avisos')
+            .select('*')
+            .eq('coro_id', APP_STATE.perfil.coro_id)
+            .eq('tipo', 'RECORDATORIO')
+            .order('creado_en', { ascending: false })
+            .limit(5);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            lista.innerHTML = '<p style="font-size: 12px; color: var(--color-texto-suave); text-align: center;">Sin notificaciones recientes</p>';
+            return;
+        }
+
+        lista.innerHTML = data.map(n => {
+            const fecha = new Date(n.creado_en).toLocaleDateString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            return `
+                <div class="notificacion-item">
+                    <div class="notificacion-fecha">${fecha}</div>
+                    <div class="notificacion-mensaje">${n.mensaje}</div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error('Error cargando historial de avisos:', err);
+    }
+}
+
+async function manejarCambioRealtime(payload) {
+    console.log('Sincronización Realtime detectada:', payload);
+    try {
+        await cargarRepertorio();
+        actualizarVista();
+    } catch (error) {
+        console.error('Error al sincronizar datos en realtime:', error);
+    }
+}
+
 /**
  * ============================================================================
  * CONTROLADORES DE VISTA Y UI
@@ -134,9 +263,22 @@ function construirInterfaz() {
     if (navConciertos && conciertos.length > 0) {
         navConciertos.innerHTML = conciertos.map(id => `
             <button class="nav-btn" data-cat="${id}">
-                <span class="icon">🎵</span> ${id.replace(/-/g, ' ').toUpperCase()}
+                <span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></span> ${id.replace(/-/g, ' ').toUpperCase()}
             </button>
         `).join('');
+    }
+
+    if (APP_STATE.perfil && ['director', 'superadmin'].includes(APP_STATE.perfil.rol)) {
+        if (DOM.sidebar && !document.getElementById('btn-ir-gestor')) {
+            const btnGestor = document.createElement('button');
+            btnGestor.id = 'btn-ir-gestor';
+            btnGestor.className = 'nav-btn';
+            btnGestor.innerHTML = '<span class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span> ADMINISTRACIÓN';
+            btnGestor.onclick = () => window.location.href = '/gestor.html';
+            const footer = document.getElementById('sidebar-footer');
+            if (footer) footer.appendChild(btnGestor);
+            else DOM.sidebar.appendChild(btnGestor);
+        }
     }
 
     buscadorUI.generarMenuTemas(APP_STATE.cantos, DOM.listaTemas, () => {
@@ -186,6 +328,7 @@ function actualizarVista() {
     
     buscadorUI.renderizarLista(filtrados, DOM.listaCantos, (canto) => {
         pdfEngine.abrirVisor(canto, DOM.contenedorPdf, DOM.barraSuperior);
+        requestWakeLock();
     });
 }
 
@@ -226,28 +369,103 @@ function configurarEventosGlobales() {
 
     DOM.btnCerrar?.addEventListener('click', () => {
         if (window.location.hash === "#visor") history.back();
-        else pdfEngine.cerrarVisor(DOM.contenedorPdf);
+        else {
+            pdfEngine.cerrarVisor(DOM.contenedorPdf);
+            releaseWakeLock();
+        }
     });
 
     window.addEventListener('popstate', () => {
         if (document.getElementById('vista-visor')?.style.display === 'block') {
             pdfEngine.cerrarVisor(DOM.contenedorPdf);
+            releaseWakeLock();
         }
     });
 
     DOM.btnToggleSidebar?.addEventListener('click', () => alternarMenuLateral());
     DOM.overlay?.addEventListener('click', () => alternarMenuLateral(true));
 
-    // TU CÓDIGO ORIGINAL DE GESTOS TÁCTILES
+    // GESTOS TÁCTILES GLOBALES
     let toqueInicialX = 0;
-    document.addEventListener('touchstart', e => toqueInicialX = e.changedTouches[0].screenX, { passive: true });
-    document.addEventListener('touchend', e => {
-        if (toqueInicialX - e.changedTouches[0].screenX > 50 && window.innerWidth <= 768 && !DOM.sidebar.classList.contains('oculto')) {
-            alternarMenuLateral(true);
-        }
+    let toqueInicialY = 0;
+    
+    document.addEventListener('touchstart', e => {
+        toqueInicialX = e.changedTouches[0].screenX;
+        toqueInicialY = e.changedTouches[0].screenY;
     }, { passive: true });
 
+    document.addEventListener('touchend', e => {
+        const deltaX = toqueInicialX - e.changedTouches[0].screenX;
+        const deltaY = toqueInicialY - e.changedTouches[0].screenY;
+
+        // Swipe Left (Cerrar Sidebar)
+        if (deltaX > 50 && Math.abs(deltaY) < 30 && window.innerWidth <= 768 && !DOM.sidebar.classList.contains('oculto')) {
+            alternarMenuLateral(true);
+        }
+
+        // Swipe Up en Banners de Aviso
+        const banners = ['.banner-vivo', '.banner-recordatorio'];
+        banners.forEach(selector => {
+            const banner = document.querySelector(selector);
+            if (banner && banner.style.display === 'flex' && e.target.closest(selector)) {
+                if (deltaY > 50 && Math.abs(deltaX) < 30) {
+                    banner.style.transform = 'translateX(-50%) translateY(-150%)';
+                    setTimeout(() => banner.style.display = 'none', 300);
+                }
+            }
+        });
+    }, { passive: true });
+
+    const cerrarBanner = (id) => {
+        const banner = document.getElementById(id);
+        if (banner) {
+            banner.style.transform = 'translateX(-50%) translateY(-150%)';
+            setTimeout(() => banner.style.display = 'none', 300);
+        }
+    };
+
+    document.getElementById('btn-cerrar-banner')?.addEventListener('click', () => cerrarBanner('banner-vivo'));
+    document.getElementById('btn-cerrar-recordatorio')?.addEventListener('click', () => cerrarBanner('banner-recordatorio'));
+
+    // INICIALIZAR MODO PÁGINAS
+    const chkModoPaginas = document.getElementById('chk-modo-paginas');
+    if (chkModoPaginas) {
+        const modoActivo = localStorage.getItem('modo-paginas') === 'true';
+        chkModoPaginas.checked = modoActivo;
+        DOM.contenedorPdf.classList.toggle('modo-paginas', modoActivo);
+
+        chkModoPaginas.addEventListener('change', (e) => {
+            const activo = e.target.checked;
+            localStorage.setItem('modo-paginas', activo);
+            DOM.contenedorPdf.classList.toggle('modo-paginas', activo);
+        });
+    }
+
     // EVENTOS DE LOS AJUSTES
+    const modalAjustes = document.getElementById('modal-ajustes');
+    
+    document.getElementById('btn-ajustes')?.addEventListener('click', async () => {
+        if (modalAjustes && APP_STATE.perfil) {
+            document.getElementById('info-nombre').textContent = APP_STATE.perfil.nombre || 'N/A';
+            document.getElementById('info-email').textContent = APP_STATE.perfil.email || 'N/A';
+            document.getElementById('info-sede').textContent = APP_STATE.perfil.coro_id ? APP_STATE.perfil.coro_id.toUpperCase() : 'N/A';
+            document.getElementById('info-rol').textContent = APP_STATE.perfil.rol || 'N/A';
+            
+            await cargarNotificacionesRecientes();
+            
+            modalAjustes.style.display = 'flex';
+            if (window.innerWidth <= 768) alternarMenuLateral(true);
+        }
+    });
+
+    document.getElementById('btn-cerrar-ajustes')?.addEventListener('click', () => {
+        if (modalAjustes) modalAjustes.style.display = 'none';
+    });
+
+    modalAjustes?.addEventListener('click', (e) => {
+        if (e.target === modalAjustes) modalAjustes.style.display = 'none';
+    });
+
     document.getElementById('btn-salir')?.addEventListener('click', async () => {
         if(confirm('¿Seguro que deseas cerrar sesión?')) {
             await supabase.auth.signOut();
@@ -264,7 +482,7 @@ function configurarEventosGlobales() {
                 sessionStorage.clear();
                 window.location.reload();
             } catch (e) {
-                alert('Error al limpiar caché: ' + e.message);
+                window.mostrarToast('Error al limpiar caché', 'error');
             }
         }
     });
@@ -322,6 +540,37 @@ function aplicarTemaGrafico(esOscuro) {
         DOM.iconoTemaSol.style.display = esOscuro ? 'block' : 'none';
     }
 }
+
+/**
+ * ============================================================================
+ * SCREEN WAKELOCK API
+ * ============================================================================
+ */
+let wakeLock = null;
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+        }
+    } catch (err) {
+        console.error('Wakelock error:', err);
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release().then(() => {
+            wakeLock = null;
+        });
+    }
+}
+
+document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        await requestWakeLock();
+    }
+});
 
 if (window.innerWidth <= 768 && DOM.sidebar) DOM.sidebar.classList.add('oculto');
 arrancarAplicacion();

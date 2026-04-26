@@ -433,8 +433,8 @@ body.tema-oscuro .pdf-page {
    ========================================== */
    #sidebar-temas {
     width: 260px;
-    background-color: #ffffff;
-    border-right: 2px solid #eaeaea;
+    background-color: var(--color-superficie);
+    border-right: 2px solid var(--color-borde);
     display: flex;
     flex-direction: column;
     box-shadow: 2px 0 5px rgba(212, 175, 55, 0.05);
@@ -449,13 +449,13 @@ body.tema-oscuro .pdf-page {
 
 .logo-sidebar {
     padding: 20px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid var(--color-borde);
 }
 
 .logo-sidebar h2 { 
     font-size: 22px; 
     margin-bottom: 15px; 
-    color: #111; 
+    color: var(--color-texto-principal); 
 }
 
 /* Contenedor escrolleable interno */
@@ -473,7 +473,7 @@ body.tema-oscuro .pdf-page {
 
 .section-label {
     font-size: 11px;
-    color: #888;
+    color: var(--color-texto-suave);
     text-transform: uppercase;
     letter-spacing: 1px;
     padding: 0 20px 10px 20px;
@@ -486,7 +486,7 @@ body.tema-oscuro .pdf-page {
     padding: 12px 20px;
     background: transparent;
     border: none;
-    color: #555;
+    color: var(--color-texto-suave);
     text-align: left;
     font-size: 15px;
     cursor: pointer;
@@ -502,14 +502,14 @@ body.tema-oscuro .pdf-page {
 }
 
 .nav-btn:hover {
-    background-color: #f9f9f9;
+    background-color: var(--color-superficie-secundaria);
 }
 
 .nav-btn.activo {
-    background-color: #faf7eb; /* Fondo dorado muy suave */
-    color: #8c732a; /* Texto dorado oscuro legíble */
+    background-color: var(--color-acento-suave); /* Fondo dorado muy suave */
+    color: var(--color-acento-fuerte); /* Texto dorado oscuro legíble */
     font-weight: bold;
-    border-left: 4px solid #D4AF37; /* Línea dorada indicadora */
+    border-left: 4px solid var(--color-acento); /* Línea dorada indicadora */
 }
 
 .btn-peligro {
@@ -520,11 +520,339 @@ body.tema-oscuro .pdf-page {
     background-color: #ffebee !important;
 }
 
-/* Empuja los ajustes siempre al fondo de la pantalla */
+/* Nuevo footer fijo del sidebar */
+.sidebar-footer {
+    border-top: 1px solid var(--color-borde);
+    padding-bottom: 20px;
+    background-color: var(--color-superficie);
+    z-index: 10;
+}
+
+/* Empuja los ajustes siempre al fondo de la pantalla (viejo, por compatibilidad si queda alguno) */
 .ajustes-bottom {
     margin-top: auto; 
     border-top: 1px solid #eaeaea;
     padding-top: 20px;
     margin-bottom: 0;
     padding-bottom: 20px;
+}
+
+/* --- TOGGLE SWITCH (AJUSTES) --- */
+.switch-estilo {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.switch-estilo input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch-estilo .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--color-input-borde);
+  transition: .4s;
+  border-radius: 24px;
+}
+.switch-estilo .slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+.switch-estilo input:checked + .slider {
+  background-color: var(--color-acento);
+}
+.switch-estilo input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* --- MODO PÁGINAS (SNAP SCROLL) --- */
+#contenedor-pdf.modo-paginas {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Firefox */
+}
+#contenedor-pdf.modo-paginas::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+#contenedor-pdf.modo-paginas .pdf-page {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    flex-shrink: 0;
+    width: 100vw;
+    margin: 0;
+}
+
+/* --- REDISEÑO DE FILAS GESTOR (UI COMPACTA) --- */
+.item-fila {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 14px 24px !important;
+    border-bottom: 1px solid var(--color-borde) !important;
+    box-sizing: border-box !important;
+    background-color: transparent !important;
+    gap: 20px !important;
+}
+
+.hover-fila:hover {
+    background-color: #f1f5f9 !important;
+    cursor: pointer;
+}
+
+.info-texto {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    text-align: left !important;
+}
+
+.nombre-canto-link {
+    all: unset !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--color-texto-principal) !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+}
+
+.nombre-canto-link:hover {
+    color: var(--color-acento) !important;
+}
+
+.subtitulo {
+    font-size: 12.5px !important;
+    color: var(--color-texto-suave) !important;
+    font-weight: 400 !important;
+    margin-top: 4px !important;
+    display: block !important;
+}
+
+.acciones-derecha {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+.btn-icono {
+    background: none !important;
+    border: none !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    color: var(--color-texto-suave) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+    box-shadow: none !important;
+}
+
+.btn-icono:hover {
+    background-color: rgba(212, 175, 55, 0.15) !important;
+    color: var(--color-acento) !important;
+    transform: scale(1.1) !important;
+}
+
+.btn-peligro-hover:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+.btn-icono.btn-peligro-suave {
+    color: #ef4444;
+}
+
+.btn-promover {
+    all: unset !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 5px 12px !important;
+    border-radius: 4px !important;
+    background-color: var(--color-acento) !important;
+    color: var(--color-superficie) !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* --- BANNERS DE AVISO (Refinados) --- */
+.banner-vivo, .banner-recordatorio {
+    position: fixed;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 10px 16px 10px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 90vw;
+    animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.banner-vivo {
+    background-color: var(--color-acento);
+}
+
+.banner-recordatorio {
+    background-color: var(--color-superficie-secundaria);
+    color: var(--color-texto-principal);
+    border: 1px solid var(--color-borde);
+}
+
+body.tema-oscuro .banner-recordatorio {
+    background-color: var(--color-borde);
+}
+
+.btn-cerrar-banner {
+    background: none;
+    border: none;
+    color: currentColor;
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+.btn-cerrar-banner:hover {
+    opacity: 1;
+    background-color: rgba(0,0,0,0.05);
+}
+.banner-vivo .btn-cerrar-banner:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* --- CONFIRMACIÓN VISUAL EN BOTONES --- */
+.confirmando {
+    background-color: #ef4444 !important;
+    color: white !important;
+    animation: pulseConfirm 0.5s infinite alternate;
+}
+
+@keyframes pulseConfirm {
+    from { opacity: 1; }
+    to { opacity: 0.7; }
+}
+
+/* --- SISTEMA DE TOASTS --- */
+#contenedor-toasts {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background-color: var(--color-superficie);
+    color: var(--color-texto-principal);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-left: 5px solid var(--color-acento);
+    pointer-events: auto;
+    animation: toastIn 0.4s ease forwards;
+    min-width: 250px;
+    max-width: 80vw;
+    text-align: center;
+}
+
+.toast.error {
+    border-left-color: #ef4444;
+}
+
+@keyframes toastIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(20px); opacity: 0; }
+}
+
+@keyframes slideDown {
+    from { top: -100px; opacity: 0; }
+    to { top: 75px; opacity: 1; }
+}
+
+.banner-contenido {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.banner-btn {
+    background-color: white;
+    color: var(--color-acento-fuerte);
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.banner-btn:active {
+    transform: scale(0.95);
+}
+
+/* --- NOTIFICACIONES RECIENTES --- */
+.notificacion-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-borde);
+}
+.notificacion-item:last-child {
+    border-bottom: none;
+}
+.notificacion-fecha {
+    font-size: 10px;
+    color: var(--color-texto-suave);
+    margin-bottom: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.notificacion-mensaje {
+    font-size: 13.5px;
+    color: var(--color-texto-principal);
+    line-height: 1.4;
+    font-weight: 500;
 }

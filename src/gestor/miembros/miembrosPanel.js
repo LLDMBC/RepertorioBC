@@ -109,16 +109,16 @@ const UI = {
                             <td style="font-weight: 600; color: var(--navy-deep);">${u.nombre || 'SIN NOMBRE'}</td>
                             <td style="color: var(--text-secondary);">${u.email || '-'}</td>
                             <td>
-                                <span style="background: ${tipo === 'activo' ? 'var(--success)' : '#f59e0b'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
+                                <span class="status-badge ${u.estado}">
                                     ${u.estado.toUpperCase()}
                                 </span>
                             </td>
                             <td style="text-align: right;">
                                 ${tipo === 'pendiente' ? `
                                     <button class="btn-principal" data-accion="aprobar" style="padding: 6px 12px; font-size: 11px;">APROBAR ACCESO</button>
-                                    <button class="btn-peligro" data-accion="rechazar" style="padding: 6px 12px; font-size: 11px; margin-left: 8px;">DENEGAR</button>
+                                    <button class="btn-revocar" data-accion="rechazar" style="margin-left: 8px;">DENEGAR</button>
                                 ` : `
-                                    <button class="btn-peligro" data-accion="revocar" style="padding: 6px 12px; font-size: 11px;">REVOCAR ACCESO</button>
+                                    <button class="btn-revocar" data-accion="revocar">REVOCAR ACCESO</button>
                                 `}
                             </td>
                         </tr>
@@ -129,33 +129,11 @@ const UI = {
     },
 
     mostrarNotificacionFlotante(mensaje, esError = false) {
-        // Reutilizamos la lógica del toast pero con el nuevo diseño limpio
-        let contenedorToasts = document.getElementById('sistema-notificaciones');
-        if (!contenedorToasts) {
-            contenedorToasts = document.createElement('div');
-            contenedorToasts.id = 'sistema-notificaciones';
-            contenedorToasts.style.cssText = 'position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9999;';
-            document.body.appendChild(contenedorToasts);
-        }
-
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            background: ${esError ? 'var(--danger)' : 'var(--navy-deep)'};
-            color: white; padding: 14px 24px; border-radius: 8px; font-size: 13px; font-weight: 600;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid ${esError ? '#fda4af' : 'var(--gold-accent)'};
-            animation: fadeIn 0.3s ease;
-        `;
-        toast.textContent = mensaje.toUpperCase();
-        contenedorToasts.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        window.mostrarToast(mensaje, esError ? 'error' : 'exito');
     }
 };
+
+let canalRealtimeMiembros = null;
 
 // ==========================================
 // 3. ORQUESTADOR (Controlador / Eventos)
@@ -179,8 +157,28 @@ export async function inicializarPanelMiembros(coroId) {
             UI.renderizarTablas(miembros);
         } catch (error) {
             console.error("Error al sincronizar usuarios:", error);
-            UI.mostrarNotificacionFlotante("ERROR DE CONEXIÓN CON LA BASE DE DATOS", true);
+            UI.mostrarNotificacionFlotante("ERROR DE CONEXIÓN", true);
         }
+    }
+
+    // Configurar Realtime
+    function configurarRealtime() {
+        if (canalRealtimeMiembros) {
+            supabase.removeChannel(canalRealtimeMiembros);
+        }
+        canalRealtimeMiembros = supabase.channel(`miembros-${coroId}`)
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'perfiles',
+                filter: `coro_id=eq.${coroId}`
+            }, (payload) => {
+                if (payload.eventType === 'INSERT') {
+                    UI.mostrarNotificacionFlotante(`NUEVA SOLICITUD DE INGRESO DETECTADA`);
+                }
+                sincronizarDatos();
+            })
+            .subscribe();
     }
 
     // 3. Delegación de eventos (Event Delegation para las tablas)
@@ -194,6 +192,25 @@ export async function inicializarPanelMiembros(coroId) {
 
         if (!usuarioId) return;
 
+        // Lógica de Confirmación Visual para acciones de denegación/revocación
+        if (['rechazar', 'revocar'].includes(accion)) {
+            if (boton.dataset.confirmar !== 'true') {
+                const textoOriginal = boton.textContent;
+                boton.dataset.confirmar = 'true';
+                boton.classList.add('confirmando');
+                boton.textContent = "¿ESTÁ SEGURO?";
+                
+                setTimeout(() => {
+                    if (boton.dataset.confirmar === 'true') {
+                        boton.dataset.confirmar = 'false';
+                        boton.classList.remove('confirmando');
+                        boton.textContent = textoOriginal;
+                    }
+                }, 3000);
+                return;
+            }
+        }
+
         // Deshabilitar botón temporalmente para evitar doble clic
         boton.disabled = true;
         boton.style.opacity = '0.5';
@@ -204,12 +221,6 @@ export async function inicializarPanelMiembros(coroId) {
                 UI.mostrarNotificacionFlotante("ACCESO APROBADO CORRECTAMENTE");
             } 
             else if (accion === 'rechazar' || accion === 'revocar') {
-                const confirmar = window.confirm("¿CONFIRMA QUE DESEA DENEGAR/REVOCAR EL ACCESO A ESTE USUARIO?");
-                if (!confirmar) {
-                    boton.disabled = false;
-                    boton.style.opacity = '1';
-                    return;
-                }
                 await API.actualizarEstadoUsuario(usuarioId, 'rechazado');
                 UI.mostrarNotificacionFlotante("ACCESO REVOCADO CORRECTAMENTE");
             }

@@ -25,12 +25,16 @@
                 <label for="login-password">Contraseña</label>
                 <input id="login-password" type="password" autocomplete="current-password" required>
             </div>
-            <div class="fila">
+            <div class="fila" style="justify-content: space-between; align-items: center;">
                 <button id="btn-login" class="boton boton-principal" type="submit">Entrar</button>
+                <button id="btn-olvide-pass" type="button" style="background:none; border:none; color:var(--gold-accent); text-decoration:underline; cursor:pointer; font-size:12px;">¿Olvidaste tu contraseña?</button>
             </div>
         </form>
 
         <form id="form-signup" class="formulario">
+            <!-- Honeypot para evitar bots -->
+            <input type="text" id="signup-bot" name="bot-field" style="display:none" tabindex="-1" autocomplete="off">
+            
             <div class="campo">
                 <label for="signup-nombre">Nombre completo</label>
                 <input id="signup-nombre" type="text" autocomplete="name" required>
@@ -46,15 +50,27 @@
             <div class="campo">
                 <label for="signup-coro">Coro</label>
                 <select id="signup-coro" required>
-                    <option value="florido">florido</option>
-                    <option value="estatal">estatal</option>
-                    <option value="otay">otay</option>
+                    <!-- Se llena dinámicamente desde Supabase -->
                 </select>
             </div>
             <div class="fila">
                 <button id="btn-signup" class="boton boton-principal" type="submit">Crear solicitud</button>
             </div>
         </form>
+
+        <!-- Modal de Nueva Contraseña (Oculto por defecto) -->
+        <div id="modal-reset-pass" class="formulario" style="display:none; margin-top:20px; padding-top:20px; border-top:1px solid #eee;">
+            <h3 style="font-size:16px; margin-bottom:10px; color:var(--navy-deep);">Establecer Nueva Contraseña</h3>
+            <form id="form-reset-pass">
+                <div class="campo">
+                    <label for="reset-new-password">Nueva Contraseña</label>
+                    <input id="reset-new-password" type="password" minlength="6" required>
+                </div>
+                <div class="fila">
+                    <button type="submit" class="boton boton-principal">Guardar Contraseña</button>
+                </div>
+            </form>
+        </div>
 
         <div id="estado-auth" class="estado">Comprobando sesión...</div>
         <div class="acciones">

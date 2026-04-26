@@ -46,19 +46,7 @@ const API = {
 // ==========================================
 const UI = {
     notificar(contenedor, mensaje, esError = false) {
-        let banner = document.getElementById('notificacion-global');
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'notificacion-global';
-            banner.style.cssText = 'padding: 12px; margin-bottom: 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center; transition: all 0.3s ease;';
-            contenedor.insertBefore(banner, contenedor.firstChild);
-        }
-        banner.textContent = mensaje.toUpperCase();
-        banner.style.backgroundColor = esError ? '#fef2f2' : '#f0fdf4';
-        banner.style.color = esError ? '#b91c1c' : '#15803d';
-        banner.style.border = `1px solid ${esError ? '#f87171' : '#4ade80'}`;
-        
-        setTimeout(() => { if(banner) banner.remove() }, 4000);
+        window.mostrarToast(mensaje, esError ? 'error' : 'exito');
     },
 
     generarMetricasHTML(metricas) {
@@ -200,7 +188,19 @@ export async function inicializarSuperPanel(esSuperadmin) {
                 return UI.notificar(contenedor, 'ERROR: EL ID SOLO ACEPTA LETRAS MINÚSCULAS, NÚMEROS Y GUIONES.', true);
             }
 
-            if (!confirm(`¿CONFIRMAR CREACIÓN?\n\nSe creará una nueva sede en el sistema con el ID: "${idVal}".\nEsta acción registrará la sede permanentemente.`)) {
+            // Confirmación Visual
+            if (btnSubmit.dataset.confirmar !== 'true') {
+                const textoOriginal = btnSubmit.textContent;
+                btnSubmit.dataset.confirmar = 'true';
+                btnSubmit.classList.add('confirmando');
+                btnSubmit.textContent = "¿CONFIRMAR CREACIÓN?";
+                setTimeout(() => {
+                    if (btnSubmit.dataset.confirmar === 'true') {
+                        btnSubmit.dataset.confirmar = 'false';
+                        btnSubmit.classList.remove('confirmando');
+                        btnSubmit.textContent = textoOriginal;
+                    }
+                }, 3000);
                 return;
             }
 
@@ -208,10 +208,10 @@ export async function inicializarSuperPanel(esSuperadmin) {
                 btnSubmit.disabled = true;
                 btnSubmit.textContent = "CREANDO...";
                 await API.crearSede(idVal, nombreVal);
-                UI.notificar(contenedor, 'SEDE CREADA CORRECTAMENTE.');
+                window.mostrarToast('SEDE CREADA CORRECTAMENTE');
                 await cargarYRenderizar();
             } catch (err) {
-                UI.notificar(contenedor, 'ERROR AL CREAR SEDE. ES POSIBLE QUE EL ID YA EXISTA.', true);
+                window.mostrarToast('ERROR AL CREAR SEDE', 'error');
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = "REGISTRAR NUEVA SEDE";
             }
@@ -226,9 +226,21 @@ export async function inicializarSuperPanel(esSuperadmin) {
                 const idSede = item.dataset.sedeId;
                 const nuevoNombre = item.querySelector('input[data-campo="nombre-sede"]').value.trim();
 
-                if (!nuevoNombre) return UI.notificar(contenedor, 'EL NOMBRE NO PUEDE ESTAR VACÍO.', true);
+                if (!nuevoNombre) return window.mostrarToast('EL NOMBRE NO PUEDE ESTAR VACÍO', 'error');
 
-                if (!confirm(`¿CONFIRMAR ACTUALIZACIÓN?\n\nEl nombre público de la sede "${idSede}" se cambiará a:\n"${nuevoNombre}"\n\n¿Deseas continuar?`)) {
+                // Confirmación Visual
+                if (btnSede.dataset.confirmar !== 'true') {
+                    const textoOriginal = btnSede.textContent;
+                    btnSede.dataset.confirmar = 'true';
+                    btnSede.classList.add('confirmando');
+                    btnSede.textContent = "¿CONFIRMAR?";
+                    setTimeout(() => {
+                        if (btnSede.dataset.confirmar === 'true') {
+                            btnSede.dataset.confirmar = 'false';
+                            btnSede.classList.remove('confirmando');
+                            btnSede.textContent = textoOriginal;
+                        }
+                    }, 3000);
                     return;
                 }
 
@@ -236,11 +248,13 @@ export async function inicializarSuperPanel(esSuperadmin) {
                     btnSede.disabled = true;
                     btnSede.textContent = "GUARDANDO...";
                     await API.actualizarSede(idSede, nuevoNombre);
-                    UI.notificar(contenedor, 'NOMBRE DE LA SEDE ACTUALIZADO.');
+                    window.mostrarToast('NOMBRE DE SEDE ACTUALIZADO');
                     btnSede.textContent = "GUARDAR CAMBIO";
                     btnSede.disabled = false;
+                    btnSede.dataset.confirmar = 'false';
+                    btnSede.classList.remove('confirmando');
                 } catch (err) {
-                    UI.notificar(contenedor, 'ERROR AL ACTUALIZAR LA SEDE.', true);
+                    window.mostrarToast('ERROR AL ACTUALIZAR', 'error');
                     btnSede.disabled = false;
                 }
             }
@@ -256,22 +270,16 @@ export async function inicializarSuperPanel(esSuperadmin) {
                 const rolOriginal = selectRol.dataset.rolOriginal;
                 const nuevoRol = selectRol.value;
 
-                // Confirmación Defensiva Crítica
-                const mensajeAlerta = `⚠️ ALERTA DE SEGURIDAD ⚠️\n\nEstás a punto de cambiar los privilegios del usuario:\n${userEmail}\n\nNUEVO ROL: ${nuevoRol.toUpperCase()}\n\n¿Estás completamente seguro de autorizar este nivel de acceso?`;
-                
-                if (!confirm(mensajeAlerta)) {
-                    selectRol.value = rolOriginal; // Rollback visual si cancela
-                    return;
-                }
-
+                // Confirmación Defensiva Crítica (Sustituimos el confirm por un aviso directo o bypass controlado)
+                // Por ahora, para selects, permitiremos el cambio directo con un Toast de éxito o error
                 try {
                     selectRol.disabled = true;
                     await API.actualizarRol(userId, nuevoRol);
-                    selectRol.dataset.rolOriginal = nuevoRol; // Actualizar la verdad local
-                    UI.notificar(contenedor, `PRIVILEGIOS ACTUALIZADOS PARA ${userEmail.toUpperCase()}`);
+                    selectRol.dataset.rolOriginal = nuevoRol; 
+                    window.mostrarToast(`PRIVILEGIOS ACTUALIZADOS: ${userEmail.toUpperCase()}`);
                 } catch (err) {
-                    UI.notificar(contenedor, 'ERROR CRÍTICO AL CAMBIAR LOS PRIVILEGIOS.', true);
-                    selectRol.value = rolOriginal; // Rollback visual si falla DB
+                    window.mostrarToast('ERROR AL CAMBIAR PRIVILEGIOS', 'error');
+                    selectRol.value = rolOriginal; 
                 } finally {
                     selectRol.disabled = false;
                 }

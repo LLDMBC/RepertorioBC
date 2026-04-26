@@ -10,6 +10,12 @@ export const pdfEngine = {
         document.getElementById('titulo-canto').textContent = canto.nombre;
         barraSuperior.classList.remove('barra-oculta');
         
+        if (localStorage.getItem('modo-paginas') === 'true') {
+            setTimeout(() => {
+                barraSuperior.classList.add('barra-oculta');
+            }, 2000);
+        }
+
         history.pushState({ visorAbierto: true }, null, "#visor");
         
         this.nivelZoom = 100; 
