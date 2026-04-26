@@ -41,7 +41,7 @@ sincronizarPartituras: async function(cantos, elementoContador) {
         setTimeout(async () => {
             const cache = await caches.open(this.NOMBRE_CACHE);
 	    for (const canto of cantos) {
-                const url = `https://mxnhmtztxgeccohlgqpt.supabase.co/storage/v1/object/public/PartiturasFlorido/${canto.archivo}`;
+                const url = `https://mxnhmtztxgeccohlgqpt.supabase.co/storage/v1/object/public/partituras/${canto.archivo}`;
                 const coincidencia = await cache.match(url);
                 
                 if (!coincidencia) {

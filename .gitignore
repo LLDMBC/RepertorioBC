@@ -1,4 +1,25 @@
+# Dependencias
 node_modules/
-.vs/
+
+# Archivos de entorno (CRÍTICO)
 .env
+.env.*
+
+# Carpetas de compilación de Vite
 dist/
+dist-ssr/
+
+# Archivos de sistema operativo (Basura de Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# Logs de errores de NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Configuraciones locales de editores
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/

@@ -1,9 +1,43 @@
 /* RESETEO BÁSICO */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
 
+:root {
+    --color-fondo-app: #fdfdfd;
+    --color-texto-principal: #333333;
+    --color-superficie: #ffffff;
+    --color-superficie-secundaria: #fcfcfc;
+    --color-borde: #eaeaea;
+    --color-acento: #d4af37;
+    --color-acento-fuerte: #8c732a;
+    --color-acento-suave: #f6f1df;
+    --color-texto-suave: #666666;
+    --color-input-fondo: #f5f5f5;
+    --color-input-borde: #e0e0e0;
+    --color-pdf-fondo: #f4f4f4;
+    --color-topbar-fondo: rgba(255, 255, 255, 0.95);
+    --color-topbar-borde: #cccccc;
+}
+
+body.tema-oscuro {
+    --color-fondo-app: #11161c;
+    --color-texto-principal: #f1f5f9;
+    --color-superficie: #1b2430;
+    --color-superficie-secundaria: #16202a;
+    --color-borde: #314052;
+    --color-acento: #f6d96b;
+    --color-acento-fuerte: #ffe48f;
+    --color-acento-suave: #2f3a4a;
+    --color-texto-suave: #c3cfdb;
+    --color-input-fondo: #222d3a;
+    --color-input-borde: #3b4a5d;
+    --color-pdf-fondo: #0f141b;
+    --color-topbar-fondo: rgba(20, 28, 38, 0.95);
+    --color-topbar-borde: #3b4a5d;
+}
+
 body {
-    background-color: #fdfdfd; 
-    color: #333333; 
+    background-color: var(--color-fondo-app);
+    color: var(--color-texto-principal);
     overscroll-behavior-y: none; 
 }
 
@@ -26,8 +60,8 @@ body {
 
 #sidebar-temas {
     width: 260px;
-    background-color: #ffffff;
-    border-right: 2px solid #eaeaea;
+    background-color: var(--color-superficie);
+    border-right: 2px solid var(--color-borde);
     display: flex;
     flex-direction: column;
     padding: 20px 0;
@@ -44,15 +78,15 @@ body {
 
 .logo-sidebar {
     padding: 0 20px 20px 20px;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid var(--color-borde);
     margin-bottom: 20px;
 }
 
-.logo-sidebar h2 { font-size: 22px; margin-bottom: 10px; color: #111; }
+.logo-sidebar h2 { font-size: 22px; margin-bottom: 10px; color: var(--color-texto-principal); }
 
 .contador-estilo {
-    background-color: #f6f1df;
-    color: #8c732a;
+    background-color: var(--color-acento-suave);
+    color: var(--color-acento-fuerte);
     font-size: 13px;
     font-weight: bold;
     padding: 4px 10px;
@@ -62,7 +96,7 @@ body {
 
 #sidebar-temas h3 {
     font-size: 14px;
-    color: #888;
+    color: var(--color-texto-suave);
     text-transform: uppercase;
     letter-spacing: 1px;
     padding: 0 20px 10px 20px;
@@ -78,18 +112,18 @@ body {
     padding: 12px 20px;
     cursor: pointer;
     font-size: 15px;
-    color: #555;
+    color: var(--color-texto-suave);
     transition: background 0.2s, color 0.2s;
     border-left: 4px solid transparent;
 }
 
-.item-tema:hover { background-color: #f9f9f9; }
+.item-tema:hover { background-color: var(--color-superficie-secundaria); }
 
 .item-tema.activo {
-    background-color: #faf7eb;
-    color: #8c732a;
+    background-color: var(--color-acento-suave);
+    color: var(--color-acento-fuerte);
     font-weight: bold;
-    border-left: 4px solid #D4AF37; /* Toque dorado */
+    border-left: 4px solid var(--color-acento); /* Toque dorado */
 }
 
 /* CONTENIDO DERECHO (Lista de cantos) */
@@ -97,14 +131,14 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    background-color: #fcfcfc;
+    background-color: var(--color-superficie-secundaria);
 }
 
 /* Cabecera del menú (Ajustada para incluir el botón) */
 .cabecera-menu {
     padding: 20px;
-    background-color: #ffffff;
-    border-bottom: 2px solid #eaeaea;
+    background-color: var(--color-superficie);
+    border-bottom: 2px solid var(--color-borde);
     z-index: 10;
     /* NUEVO: Flexbox para alinear el botón y el buscador */
     display: flex;
@@ -116,7 +150,7 @@ body {
 #btn-toggle-sidebar {
     background: none;
     border: none;
-    color: #D4AF37; /* Dorado */
+    color: var(--color-acento); /* Dorado */
     cursor: pointer;
     padding: 5px;
     display: flex;
@@ -127,7 +161,27 @@ body {
 }
 
 #btn-toggle-sidebar:active {
-    background-color: #f6f1df;
+    background-color: var(--color-acento-suave);
+}
+
+#btn-toggle-tema {
+    background: none;
+    border: 1px solid var(--color-borde);
+    color: var(--color-texto-principal);
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+#btn-toggle-tema:active {
+    background-color: var(--color-acento-suave);
+    color: var(--color-acento);
 }
 
 /* --- NUEVOS ESTILOS DEL BUSCADOR Y BOTÓN LIMPIAR --- */
@@ -143,19 +197,20 @@ body {
     padding: 15px;
     padding-right: 50px; /* Deja espacio para que el texto no choque con la X */
     border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    background-color: #f5f5f5;
+    border: 1px solid var(--color-input-borde);
+    background-color: var(--color-input-fondo);
+    color: var(--color-texto-principal);
     font-size: 16px;
     outline: none;
 }
-#buscador:focus { border-color: #D4AF37; }
+#buscador:focus { border-color: var(--color-acento); }
 
 #btn-limpiar-busqueda {
     position: absolute;
     right: 8px;
     background: none;
     border: none;
-    color: #a0a0a0;
+    color: var(--color-texto-suave);
     cursor: pointer;
     padding: 10px; /* Área táctil amplia y accesible */
     display: flex;
@@ -182,7 +237,7 @@ body {
 }
 
 .tarjeta-canto {
-    background-color: #ffffff;
+    background-color: var(--color-superficie);
     padding: 18px 20px;
     margin-bottom: 10px; /* Separación entre cantos */
     border-radius: 8px;
@@ -190,16 +245,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid #eaeaea;
-    border-left: 5px solid #D4AF37; /* Línea dorada */
+    border: 1px solid var(--color-borde);
+    border-left: 5px solid var(--color-acento); /* Línea dorada */
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-.tarjeta-canto h3 { font-size: 17px; color: #222; }
+.tarjeta-canto h3 { font-size: 17px; color: var(--color-texto-principal); }
 
 .tema-etiqueta {
-    background-color: #f0f0f0;
-    color: #666;
+    background-color: var(--color-input-fondo);
+    color: var(--color-texto-suave);
     font-size: 12px;
     padding: 4px 10px;
     border-radius: 12px;
@@ -213,25 +268,25 @@ body {
 
 #barra-superior {
     position: absolute; top: 0; left: 0; width: 100%; height: 60px;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--color-topbar-fondo);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     display: flex; align-items: center; padding: 0 15px;
     transition: transform 0.3s ease-in-out; z-index: 1000;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--color-topbar-borde);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     transition: transform 0.3s ease-in-out;
 }
 
 .barra-oculta { transform: translateY(-100%); }
 
-#btn-cerrar { background: none; border: none; color: #D4AF37; cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; }
+#btn-cerrar { background: none; border: none; color: var(--color-acento); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; }
 
-#titulo-canto { flex-grow: 1; text-align: center; font-size: 18px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+#titulo-canto { flex-grow: 1; text-align: center; font-size: 18px; color: var(--color-texto-principal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 
 #btn-reset-zoom {
-    background-color: rgba(212, 175, 55, 0.1); /* Fondo dorado transparente */
-    border: 1px solid #D4AF37;
-    color: #D4AF37;
+    background-color: color-mix(in srgb, var(--color-acento) 15%, transparent);
+    border: 1px solid var(--color-acento);
+    color: var(--color-acento);
     cursor: pointer;
     padding: 6px;
     border-radius: 8px;
@@ -243,8 +298,8 @@ body {
 }
 
 #btn-reset-zoom:active {
-    background-color: #D4AF37;
-    color: white;
+    background-color: var(--color-acento);
+    color: var(--color-superficie);
 }
 
 /* Asegura que la vista ocupe TODA la pantalla sin moverse */
@@ -267,7 +322,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff; /* Ahora es blanco */
+    background-color: var(--color-superficie); /* Ahora es blanco */
     z-index: 1000;
     overflow: hidden;
     display: none;
@@ -280,7 +335,7 @@ body {
     display: flex; /* Usamos flex para el centrado inicial */
     flex-direction: column;
     align-items: center; /* Centra por defecto */
-    background-color: #f4f4f4;
+    background-color: var(--color-pdf-fondo);
     -webkit-overflow-scrolling: touch;
     padding-top: 70px;
     box-sizing: border-box;
@@ -304,6 +359,10 @@ body {
     transform-origin: top left; /* El ancla matemática: crece desde la esquina */
     will-change: width, scroll-position; /* Optimiza el rendimiento en la tablet */
     height: auto; /* Mantiene la proporción de la partitura */
+}
+
+body.tema-oscuro .pdf-page {
+    filter: invert(1) hue-rotate(180deg) contrast(1.2);
 }
 
 /* Evitamos que los márgenes interfieran con el cálculo de porcentaje */
@@ -351,4 +410,121 @@ body {
 
 #overlay-sidebar.activo {
     display: block;
+}
+/* styles.css */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--navy-deep);
+    color: white;
+}
+
+.sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* ==========================================
+   NUEVOS ESTILOS DEL SIDEBAR PROFESIONAL
+   ========================================== */
+   #sidebar-temas {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 2px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(212, 175, 55, 0.05);
+    transition: margin-left 0.3s ease-in-out;
+    flex-shrink: 0; 
+    height: 100vh;
+}
+
+#sidebar-temas.oculto {
+    margin-left: -260px;
+}
+
+.logo-sidebar {
+    padding: 20px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.logo-sidebar h2 { 
+    font-size: 22px; 
+    margin-bottom: 15px; 
+    color: #111; 
+}
+
+/* Contenedor escrolleable interno */
+.sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding-top: 15px;
+}
+
+.sidebar-seccion {
+    margin-bottom: 20px;
+}
+
+.section-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 20px 10px 20px;
+    font-weight: 700;
+}
+
+/* Estilo unificado para los botones del menú y temas */
+.nav-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    color: #555;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-left: 4px solid transparent;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-btn .icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.nav-btn:hover {
+    background-color: #f9f9f9;
+}
+
+.nav-btn.activo {
+    background-color: #faf7eb; /* Fondo dorado muy suave */
+    color: #8c732a; /* Texto dorado oscuro legíble */
+    font-weight: bold;
+    border-left: 4px solid #D4AF37; /* Línea dorada indicadora */
+}
+
+.btn-peligro {
+    color: #d32f2f !important;
+}
+
+.btn-peligro:hover {
+    background-color: #ffebee !important;
+}
+
+/* Empuja los ajustes siempre al fondo de la pantalla */
+.ajustes-bottom {
+    margin-top: auto; 
+    border-top: 1px solid #eaeaea;
+    padding-top: 20px;
+    margin-bottom: 0;
+    padding-bottom: 20px;
 }

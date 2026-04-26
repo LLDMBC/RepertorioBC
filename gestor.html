@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel de Control | RepertorioBC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/styles/gestor.css">
+</head>
+<body>
+    <div class="layout-maestro">
+        
+        <header class="topbar">
+            <div class="topbar-izq">
+                <h2 class="logo-app">REPERTORIO BC</h2>
+                <span id="usuario-rol" class="badge-rol">CONSULTANDO...</span>
+            </div>
+            
+            <div class="topbar-centro">
+                <div id="contenedor-selector-sede" class="selector-wrapper" style="display: none;">
+                    <label for="selector-sede-global">SEDE ACTIVA:</label>
+                    <select id="selector-sede-global" class="select-contexto"></select>
+                </div>
+            </div>
+
+            <div class="topbar-der">
+                <button id="btn-ir-publico" class="btn-secundario">VER CATÁLOGO</button>
+                <button id="btn-cerrar-sesion" class="btn-peligro">SALIR</button>
+            </div>
+        </header>
+
+        <div class="cuerpo-aplicacion">
+            <nav class="sidebar">
+                <div class="sidebar-seccion">
+                    <p class="sidebar-label">GESTIÓN OPERATIVA</p>
+                    <button id="tab-partituras" class="nav-item activo">PARTITURAS</button>
+                    <button id="tab-mi-coro" class="nav-item">USUARIOS SEDE</button>
+                </div>
+
+                <div id="seccion-superadmin" class="sidebar-seccion" hidden>
+                    <p class="sidebar-label">ADMINISTRACIÓN</p>
+                    <button id="tab-admin-global" class="nav-item">CONTROL GLOBAL</button>
+                </div>
+            </nav>
+
+            <main class="contenido-principal">
+                <div id="estado-carga-global" class="mensaje-estado">Sincronizando con el servidor...</div>
+
+                <div id="contenedor-paneles">
+                    <section id="panel-partituras" class="panel-viva" hidden></section>
+                    <section id="panel-miembros" class="panel-viva" hidden></section>
+                    <section id="panel-maestro" class="panel-viva" hidden></section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="modal-partitura" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="titulo-form">GESTIÓN DE PARTITURA</h3>
+                <button id="btn-cerrar-modal" class="btn-cerrar-ico">✕</button>
+            </div>
+            <form id="form-partitura" class="form-estandar">
+                <div class="campo-grupo">
+                    <label>NOMBRE DEL CANTO</label>
+                    <input id="partitura-nombre" class="input-estandar" type="text" required>
+                </div>
+                <div class="campo-grupo">
+                    <label>ARCHIVO PDF</label>
+                    <input type="file" id="partitura-archivo-file" class="input-estandar" accept=".pdf">
+                </div>
+                <div class="campo-grupo">
+                    <label>CATEGORÍAS (TEMAS)</label>
+                    <select id="partitura-temas" class="input-estandar" multiple></select>
+                    <small style="font-size: 10px; color: #64748b;">MANTENGA PRESIONADO CTRL PARA SELECCIONAR VARIOS</small>
+                </div>
+                <div class="campo-grupo">
+                    <label>CREAR NUEVA CATEGORÍA</label>
+                    <input id="partitura-temas-libres" class="input-estandar" type="text" placeholder="SEPARAR POR COMAS">
+                </div>
+                <div class="modal-acciones">
+                    <button type="submit" id="btn-guardar" class="btn-principal ancho-total">GUARDAR CAMBIOS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="/src/gestor/gestorApp.js"></script>
+</body>
+</html>

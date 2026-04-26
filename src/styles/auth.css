@@ -1,0 +1,105 @@
+/* src/styles/auth.css */
+:root {
+    --fondo: #0f172a;
+    --superficie: #111c31;
+    --superficie-secundaria: #17253f;
+    --texto: #e2e8f0;
+    --texto-suave: #94a3b8;
+    --borde: #334155;
+    --acento: #d4af37;
+    --error: #fda4af;
+    --ok: #86efac;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+body { 
+    min-height: 100vh; 
+    background: var(--fondo); 
+    color: var(--texto); 
+    display: grid; 
+    place-items: center; 
+    padding: 20px; 
+}
+
+.tarjeta {
+    width: min(540px, 100%);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+h1 { font-size: 24px; margin-bottom: 8px; color: var(--acento); }
+
+.subtitulo { color: var(--texto-suave); line-height: 1.6; margin-bottom: 24px; }
+
+.tabs { display: flex; gap: 12px; margin-bottom: 24px; }
+
+.tab {
+    flex: 1;
+    border: 1px solid var(--borde);
+    background: transparent;
+    color: var(--texto);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tab.activa {
+    border-color: var(--acento);
+    color: var(--acento);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.formulario { display: none; }
+.formulario.activo { display: block; }
+
+.campo { margin-bottom: 16px; }
+.campo label {
+    display: block;
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.campo input, .campo select {
+    width: 100%;
+    border: 2px solid var(--borde);
+    border-radius: 10px;
+    padding: 12px;
+    background: var(--superficie-secundaria);
+    color: var(--texto);
+    font-size: 15px;
+    transition: border-color 0.2s;
+}
+
+.campo input:focus { outline: none; border-color: var(--acento); }
+
+.boton-principal {
+    width: 100%;
+    background: var(--acento);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.estado {
+    margin-top: 20px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.estado.ok { color: var(--ok); border: 1px solid var(--ok); }
+.estado.error { color: var(--error); border: 1px solid var(--error); }

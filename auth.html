@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | RepertorioBC</title>
+    <link rel="stylesheet" href="/src/styles/auth.css">
+</head>
+<body>
+    <main class="tarjeta">
+        <h1>Acceso de Miembros</h1>
+        <p class="subtitulo">Inicia sesión o solicita acceso a tu coro.</p>
+
+        <div class="tabs">
+            <button id="tab-login" class="tab activa" type="button">Iniciar Sesión</button>
+            <button id="tab-signup" class="tab" type="button">Solicitar Acceso</button>
+        </div>
+
+        <form id="form-login" class="formulario activo">
+            <div class="campo">
+                <label for="login-email">Email</label>
+                <input id="login-email" type="email" autocomplete="email" required>
+            </div>
+            <div class="campo">
+                <label for="login-password">Contraseña</label>
+                <input id="login-password" type="password" autocomplete="current-password" required>
+            </div>
+            <div class="fila">
+                <button id="btn-login" class="boton boton-principal" type="submit">Entrar</button>
+            </div>
+        </form>
+
+        <form id="form-signup" class="formulario">
+            <div class="campo">
+                <label for="signup-nombre">Nombre completo</label>
+                <input id="signup-nombre" type="text" autocomplete="name" required>
+            </div>
+            <div class="campo">
+                <label for="signup-email">Email</label>
+                <input id="signup-email" type="email" autocomplete="email" required>
+            </div>
+            <div class="campo">
+                <label for="signup-password">Contraseña</label>
+                <input id="signup-password" type="password" minlength="6" autocomplete="new-password" required>
+            </div>
+            <div class="campo">
+                <label for="signup-coro">Coro</label>
+                <select id="signup-coro" required>
+                    <option value="florido">florido</option>
+                    <option value="estatal">estatal</option>
+                    <option value="otay">otay</option>
+                </select>
+            </div>
+            <div class="fila">
+                <button id="btn-signup" class="boton boton-principal" type="submit">Crear solicitud</button>
+            </div>
+        </form>
+
+        <div id="estado-auth" class="estado">Comprobando sesión...</div>
+        <div class="acciones">
+            <button id="btn-ir-publico" class="boton">Ir a visor público</button>
+            <button id="btn-cerrar-sesion" class="boton boton-principal" style="display: none;">Cerrar sesión</button>
+        </div>
+    </main>
+
+    <script type="module" src="/src/auth/authApp.js"></script>
+</body>
+</html>

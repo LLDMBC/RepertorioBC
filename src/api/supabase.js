@@ -1,16 +1,7 @@
-import { supabase } from '../api/supabase.js';
+import { createClient } from '@supabase/supabase-js';
 
-async function obtenerPdfSeguro(nombreArchivo) {
-    // Le pedimos a Supabase una URL que expira en 60 segundos
-    const { data, error } = await supabase.storage
-        .from('partituras')
-        .createSignedUrl(nombreArchivo, 60);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    if (error) {
-        console.error("Error de seguridad al pedir el PDF:", error);
-        return null;
-    }
-
-    // Esta URL larga y segura es la que le pasas a pdf.js o al Service Worker
-    return data.signedUrl; 
-}
+// Creamos la conexión
+export const supabase = createClient(supabaseUrl, supabaseKey);

@@ -15,7 +15,7 @@ export const pdfEngine = {
         this.nivelZoom = 100; 
         contenedorPdf.innerHTML = '<p style="margin-top:80px; text-align:center; color:#555;">Cargando partitura en alta resolución...</p>';
 	
-	const urlSupabase = `https://mxnhmtztxgeccohlgqpt.supabase.co/storage/v1/object/public/PartiturasFlorido/${canto.archivo}`;
+	const urlSupabase = `https://mxnhmtztxgeccohlgqpt.supabase.co/storage/v1/object/public/partituras/${canto.archivo}`;
 
         pdfjsLib.getDocument(urlSupabase).promise.then(pdf => {
             contenedorPdf.innerHTML = ''; 
